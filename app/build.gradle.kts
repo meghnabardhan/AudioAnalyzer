@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
+    id("org.jetbrains.kotlin.android") version "2.0.21"
 }
 
 android {
@@ -34,6 +35,9 @@ android {
     buildFeatures {
         compose = true
     }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
 }
 
 dependencies {
@@ -47,9 +51,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    ksp(libs.room.compiler)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.navigation.compose)
     testImplementation(libs.junit)
