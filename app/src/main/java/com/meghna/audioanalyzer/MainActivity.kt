@@ -22,6 +22,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.meghna.audioanalyzer.AudioViewModel
 import com.meghna.audioanalyzer.screens.FFTVisualizerScreen
 import com.meghna.audioanalyzer.screens.FocusStateScreen
 import com.meghna.audioanalyzer.screens.RoutingGraphScreen
@@ -37,6 +39,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             AudioAnalyzerTheme {
                 val navController = rememberNavController()
+		val viewModel: AudioViewModel = hiltViewModel()
 
                 // Bottom navigation items
                 val items = listOf(
@@ -76,8 +79,8 @@ class MainActivity : ComponentActivity() {
                         startDestination = "dashboard",
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        composable("dashboard") { StreamDashboardScreen() }
-                        composable("focus") { FocusStateScreen() }
+                        composable("dashboard") { StreamDashboardScreen(viewModel = viewModel) }
+                        composable("focus") { FocusStateScreen(viewModel = viewModel) }
                         composable("routing") { RoutingGraphScreen() }
                         composable("fft") { FFTVisualizerScreen() }
                     }

@@ -2,31 +2,76 @@ package com.meghna.audioanalyzer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.meghna.audioanalyzer.data.model.AudioFocusInfo
+import com.meghna.audioanalyzer.data.model.AudioStreamInfo
+import com.meghna.audioanalyzer.data.model.AudioDeviceInfo
+import com.meghna.audioanalyzer.data.model.FocusState
+import com.meghna.audioanalyzer.data.model.FocusType
+import com.meghna.audioanalyzer.data.repository.AudioRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AudioViewModel : ViewModel() {
+@HiltViewModel
+class AudioViewModel @Inject constructor(
+    private val audioRepository: AudioRepository
+) : ViewModel() {
 
-    // Private mutable state - only ViewModel can change this
-    private val _secondsElapsed = MutableStateFlow(0)
+    private val _audioStreams = MutableStateFlow<List<AudioStreamInfo>>(emptyList())
+    val audioStreams: StateFlow<List<AudioStreamInfo>> = _audioStreams.asStateFlow()
 
-    // Public read-only state - UI can only read this
-    val secondsElapsed: StateFlow<Int> = _secondsElapsed.asStateFlow()
+    private val _connectedDevices = MutableStateFlow<List<AudioDeviceInfo>>(emptyList())
+    val connectedDevices: StateFlow<List<AudioDeviceInfo>> = _connectedDevices.asStateFlow()
+
+    private val _focusInfo = MutableStateFlow(
+        AudioFocusInfo(focusState = FocusState.NONE, focusType = FocusType.NONE)
+    )
+    val focusInfo: StateFlow<AudioFocusInfo> = _focusInfo.asStateFlow()
+
+    private val _focusHistory = MutableStateFlow<List<AudioFocusInfo>>(emptyList())
+    val focusHistory: StateFlow<List<AudioFocusInfo>> = _focusHistory.asStateFlow()
 
     init {
-        // This runs automatically when ViewModel is created
-        startCounting()
+        startMonitoring()
+        observeFocus()
     }
 
-    private fun startCounting() {
+    private fun startMonitoring() {
         viewModelScope.launch {
             while (true) {
-                delay(1000) // wait 1 second
-                _secondsElapsed.value += 1 // increment counter
+                _audioStreams.value = audioRepository.getActiveStreams()
+                _connectedDevices.value = audioRepository.getConnectedDevices()
+                delay(1000)
             }
         }
+    }
+
+    private fun observeFocus() {
+        viewModelScope.launch {
+            audioRepository.observeAudioFocus().collect { info ->
+                _focusInfo.value = info
+                // Keep last 10 focus events as history
+                val current = _focusHistory.value.toMutableList()
+                current.add(0, info)
+                _focusHistory.value = current.take(10)
+            }
+        }
+    }
+
+    fun requestFocus() {
+        audioRepository.requestAudioFocus()
+    }
+
+    fun abandonFocus() {
+        audioRepository.abandonAudioFocus()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        audioRepository.abandonAudioFocus()
     }
 }
