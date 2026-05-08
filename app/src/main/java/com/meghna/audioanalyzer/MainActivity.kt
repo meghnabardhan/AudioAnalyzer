@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
                         composable("dashboard") { StreamDashboardScreen(viewModel = viewModel) }
                         composable("focus") { FocusStateScreen(viewModel = viewModel) }
                         composable("routing") { RoutingGraphScreen(viewModel = viewModel) }
-                        composable("fft") { FFTVisualizerScreen() }
+                        composable("fft") { FFTVisualizerScreen(viewModel = viewModel) }
                     }
                 }
             }

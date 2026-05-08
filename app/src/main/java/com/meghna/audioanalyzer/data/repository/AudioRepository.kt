@@ -11,4 +11,5 @@ interface AudioRepository {
     fun observeAudioFocus(): Flow<AudioFocusInfo>
     fun requestAudioFocus(): Boolean
     fun abandonAudioFocus()
+    fun observeFftData(): Flow<FloatArray>
 }

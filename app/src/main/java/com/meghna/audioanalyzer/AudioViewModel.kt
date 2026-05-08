@@ -9,6 +9,7 @@ import com.meghna.audioanalyzer.data.model.FocusState
 import com.meghna.audioanalyzer.data.model.FocusType
 import com.meghna.audioanalyzer.data.repository.AudioRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,12 +22,14 @@ class AudioViewModel @Inject constructor(
     private val audioRepository: AudioRepository
 ) : ViewModel() {
 
+    // ─── Streams ───────────────────────────────────────────────────
     private val _audioStreams = MutableStateFlow<List<AudioStreamInfo>>(emptyList())
     val audioStreams: StateFlow<List<AudioStreamInfo>> = _audioStreams.asStateFlow()
 
     private val _connectedDevices = MutableStateFlow<List<AudioDeviceInfo>>(emptyList())
     val connectedDevices: StateFlow<List<AudioDeviceInfo>> = _connectedDevices.asStateFlow()
 
+    // ─── Focus ─────────────────────────────────────────────────────
     private val _focusInfo = MutableStateFlow(
         AudioFocusInfo(focusState = FocusState.NONE, focusType = FocusType.NONE)
     )
@@ -34,6 +37,12 @@ class AudioViewModel @Inject constructor(
 
     private val _focusHistory = MutableStateFlow<List<AudioFocusInfo>>(emptyList())
     val focusHistory: StateFlow<List<AudioFocusInfo>> = _focusHistory.asStateFlow()
+
+    // ─── FFT ───────────────────────────────────────────────────────
+    private val _fftBands = MutableStateFlow(FloatArray(32))
+    val fftBands: StateFlow<FloatArray> = _fftBands.asStateFlow()
+
+    private var fftJob: Job? = null
 
     init {
         startMonitoring()
@@ -54,7 +63,6 @@ class AudioViewModel @Inject constructor(
         viewModelScope.launch {
             audioRepository.observeAudioFocus().collect { info ->
                 _focusInfo.value = info
-                // Keep last 10 focus events as history
                 val current = _focusHistory.value.toMutableList()
                 current.add(0, info)
                 _focusHistory.value = current.take(10)
@@ -62,16 +70,28 @@ class AudioViewModel @Inject constructor(
         }
     }
 
-    fun requestFocus() {
-        audioRepository.requestAudioFocus()
+    fun requestFocus() { audioRepository.requestAudioFocus() }
+
+    fun abandonFocus() { audioRepository.abandonAudioFocus() }
+
+    fun startFftCapture() {
+        if (fftJob?.isActive == true) return
+        fftJob = viewModelScope.launch {
+            audioRepository.observeFftData().collect { bands ->
+                _fftBands.value = bands
+            }
+        }
     }
 
-    fun abandonFocus() {
-        audioRepository.abandonAudioFocus()
+    fun stopFftCapture() {
+        fftJob?.cancel()
+        fftJob = null
+        _fftBands.value = FloatArray(32)
     }
 
     override fun onCleared() {
         super.onCleared()
         audioRepository.abandonAudioFocus()
+        stopFftCapture()
     }
 }
