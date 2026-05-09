@@ -26,7 +26,7 @@ A real-time diagnostic tool that pulls back the curtain on Android's internal au
 
 ## Why Does This Exist?
 
-I joined Visteon as an Android intern in January 2025, working on automotive infotainment systems. Every day I was writing code that touched Android's audio layer — navigation prompts interrupting music, phone calls routing to car speakers, alerts ducking background audio. I was using these APIs but I genuinely had no idea what was happening underneath.
+I joined Visteon as a SWE Android Audio in August 2025, working on automotive infotainment systems. Every day I was writing code that touched Android's audio layer — navigation prompts interrupting music, phone calls routing to car speakers, alerts ducking background audio. I was using these APIs but I genuinely had no idea what was happening underneath.
 
 I kept asking myself: when a navigation prompt fires, what exactly happens to the music stream? Which device does it route to? Who wins the audio focus battle? The Android docs gave me the what. They never gave me the why.
 
@@ -122,7 +122,7 @@ The FFT was the other one. Not the algorithm itself — that is well documented.
 
 ## What This Taught Me
 
-I thought I knew Android's audio system after six months of internship. I did not. I knew the surface.
+I thought I knew Android's audio system after a year of internship and full-time journey in this domain. I did not. I knew the surface.
 
 The thing that genuinely surprised me was how much of Android's audio behavior is policy, not mechanism. The OS does not technically prevent you from routing RING to a Bluetooth headset. It just has a policy that says it should not. Understanding the difference between what the platform can do and what it chooses to do — that was the real lesson.
 
