@@ -145,18 +145,23 @@ class AudioRepositoryImpl @Inject constructor(
     }
 
     private fun getDeviceTypeName(type: Int): String {
-        return when (type) {
-            android.media.AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> "Built-in Speaker"
-            android.media.AudioDeviceInfo.TYPE_BUILTIN_EARPIECE -> "Earpiece"
-            android.media.AudioDeviceInfo.TYPE_WIRED_HEADPHONES -> "Wired Headphones"
-            android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET -> "Wired Headset"
-            android.media.AudioDeviceInfo.TYPE_BLUETOOTH_A2DP -> "Bluetooth A2DP"
-            android.media.AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> "Bluetooth SCO"
-            android.media.AudioDeviceInfo.TYPE_USB_DEVICE -> "USB Device"
-            android.media.AudioDeviceInfo.TYPE_USB_HEADSET -> "USB Headset"
-            else -> "Unknown Device"
-        }
+    return when (type) {
+        android.media.AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> "Built-in Speaker"
+        android.media.AudioDeviceInfo.TYPE_BUILTIN_EARPIECE -> "Earpiece"
+        android.media.AudioDeviceInfo.TYPE_WIRED_HEADPHONES -> "Wired Headphones"
+        android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET -> "Wired Headset"
+        android.media.AudioDeviceInfo.TYPE_BLUETOOTH_A2DP -> "Bluetooth A2DP"
+        android.media.AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> "Bluetooth SCO"
+        android.media.AudioDeviceInfo.TYPE_USB_DEVICE -> "USB Device"
+        android.media.AudioDeviceInfo.TYPE_USB_HEADSET -> "USB Headset"
+        18 -> "Telephony"        // TYPE_TELEPHONY — voice call audio path
+        21 -> "Bus"              // TYPE_BUS — internal audio bus, ignore in routing
+        24 -> "Built-in Speaker" // TYPE_BUILTIN_SPEAKER_SAFE — treat as speaker
+        26 -> "Bluetooth LE"     // TYPE_BLE_HEADSET (API 31+)
+        27 -> "Bluetooth LE"     // TYPE_BLE_SPEAKER (API 31+)
+        else -> "Unknown Device"
     }
+}
 
     // ─── FFT ───────────────────────────────────────────────────────
 
