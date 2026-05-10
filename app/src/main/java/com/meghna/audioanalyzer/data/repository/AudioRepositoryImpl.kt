@@ -159,7 +159,7 @@ class AudioRepositoryImpl @Inject constructor(
         24 -> "Built-in Speaker" // TYPE_BUILTIN_SPEAKER_SAFE — treat as speaker
         26 -> "Bluetooth LE"     // TYPE_BLE_HEADSET (API 31+)
         27 -> "Bluetooth LE"     // TYPE_BLE_SPEAKER (API 31+)
-        else -> "Unknown Device"
+        else -> "Internal Audio Path"
     }
 }
 
