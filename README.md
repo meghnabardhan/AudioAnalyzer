@@ -2,7 +2,7 @@
 
 > *Because Android's audio system deserves more than a volume slider.*
 
-![Build](https://img.shields.io/badge/build-passing-brightgreen)
+![Android CI](https://github.com/meghnabardhan/AudioAnalyzer/actions/workflows/android.yml/badge.svg)
 ![Platform](https://img.shields.io/badge/platform-Android-blue)
 ![Language](https://img.shields.io/badge/language-Kotlin-purple)
 ![Architecture](https://img.shields.io/badge/architecture-MVVM-orange)
